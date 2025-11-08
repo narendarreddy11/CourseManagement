@@ -1,20 +1,21 @@
 package springcrud.securityimp.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Table(name="user_profile")
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
+@Table(name = "user_profile")
+@ToString(exclude = {"user"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Profile {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private int id;
 
     private String firstName;
@@ -22,7 +23,7 @@ public class Profile {
     private String bio;
     private Long phonoenumber;
     private String email;
-    private String Address;
+    private String address;
     private String profileImagePath;
 
     @OneToOne

@@ -1,20 +1,23 @@
 package springcrud.securityimp.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
-@Table(name="Course_table")
+@AllArgsConstructor
+@Builder
+@Table(name = "Course_table")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = {"createdBy", "enrollments", "image"})
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private int id;
 
     private String title;

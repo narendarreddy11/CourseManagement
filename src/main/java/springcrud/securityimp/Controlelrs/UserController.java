@@ -55,28 +55,11 @@ public class UserController {
     }
 
     // ✅ Delete user by ID
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable int id) {
-        try {
-            String message = userService.deleteUserById(id);
-
-            // Always return 200 OK with message
-            return ResponseEntity.ok(Map.of("message", message));
-
-        } catch (RuntimeException e) {
-            // If admin restriction → treat as warning but still 200
-            if ("Admin accounts cannot be deleted!".equals(e.getMessage())) {
-                return ResponseEntity.ok(Map.of("message", e.getMessage()));
-            }
-
-            // Other errors (e.g., user not found) → 400
-            String errorMsg = (e.getMessage() != null && !e.getMessage().isBlank())
-                    ? e.getMessage()
-                    : "Error deleting user";
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", errorMsg));
-        }
+    public ResponseEntity<String> deleteUser(@PathVariable int id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok("User deleted successfully");
     }
 
 

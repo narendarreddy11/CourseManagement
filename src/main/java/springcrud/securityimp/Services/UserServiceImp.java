@@ -66,59 +66,33 @@ public class UserServiceImp {
 
     // ✅ Delete user safely (with cascade handling)
     @Transactional
-    public String deleteUserById(int id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
+    public void deleteUser(int userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (user.getRole() == Role.ADMIN) {
-            throw new RuntimeException("Admin accounts cannot be deleted!");
-        }
+        // ✅ Step 1: Break relationships before deleting
+        // Remove user from all enrollments
+        user.getEnrollments().forEach(enrollment -> {
+            enrollment.setStudent(null);
+            enrollment.setCourse(null);
+        });
+        user.getEnrollments().clear();
 
-        System.out.println("🗑 Deleting user: " + user.getUsername() + " (Role: " + user.getRole() + ")");
+        // If user created courses (admin case), break that link too
+        user.getCreatedCourses().forEach(course -> course.setCreatedBy(null));
+        user.getCreatedCourses().clear();
 
-        // ✅ 1. Delete profile
+        // ✅ Step 2: Delete profile manually if exists
         if (user.getProfile() != null) {
-            System.out.println("Deleting profile for user " + user.getUsername());
-            profileRepository.delete(user.getProfile());
+            user.getProfile().setUser(null);
             user.setProfile(null);
         }
 
-        // ✅ 2. Delete enrollments (where user is a student)
-        if (!user.getEnrollments().isEmpty()) {
-            System.out.println("Deleting " + user.getEnrollments().size() + " enrollments for user " + user.getUsername());
-            enrollmentRepository.deleteAll(user.getEnrollments());
-            user.getEnrollments().clear();
-        }
-
-        // ✅ 3. Delete created courses (and their enrollments/images)
-        if (!user.getCreatedCourses().isEmpty()) {
-            System.out.println("Deleting " + user.getCreatedCourses().size() + " courses created by " + user.getUsername());
-            for (Course course : user.getCreatedCourses()) {
-
-                // Delete enrollments in each course
-                if (!course.getEnrollments().isEmpty()) {
-                    System.out.println("Deleting enrollments for course: " + course.getTitle());
-                    enrollmentRepository.deleteAll(course.getEnrollments());
-                    course.getEnrollments().clear();
-                }
-
-                // Delete image if exists
-                if (course.getImage() != null) {
-                    course.setImage(null);
-                }
-
-                courseRepository.delete(course);
-            }
-            user.getCreatedCourses().clear();
-        }
-
-        // ✅ 4. Finally delete user
-        System.out.println("Deleting user entity now...");
+        // ✅ Step 3: Delete the user
         userRepository.delete(user);
-
-        System.out.println("✅ Successfully deleted user and all related data!");
-        return "User deleted successfully!";
     }
+
+
 
     // ✅ Find by username
     public Optional<UserDTO> getUserByUsername(String username) {

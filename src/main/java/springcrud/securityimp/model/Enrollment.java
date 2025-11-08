@@ -1,20 +1,22 @@
 package springcrud.securityimp.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "enrollments")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@Table(name = "enrollments")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = {"student", "course"})
 public class Enrollment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private int enrollmentId;
 
     @ManyToOne
