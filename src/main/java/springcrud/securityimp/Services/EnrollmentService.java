@@ -71,6 +71,14 @@ public class EnrollmentService {
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
+    @Transactional(readOnly = true)
+    public List<EnrollmentDTO> getAllEnrollments() {
+        return enrollmentRepository.findAll()
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
     public long getAllEnrollmentsCount() {
         return enrollmentRepository.count();
     }

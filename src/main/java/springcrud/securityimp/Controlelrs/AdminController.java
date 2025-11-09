@@ -6,9 +6,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
+import springcrud.securityimp.Dto.EnrollmentDTO;
 import springcrud.securityimp.Services.CourseServiceImp;
 import springcrud.securityimp.Services.EnrollmentService;
 import springcrud.securityimp.Services.UserServiceImp;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -53,4 +56,11 @@ public class AdminController {
         long count = enrollmentService.getAllEnrollmentsCount();
         return ResponseEntity.ok(count);
     }
+    // ✅ Get all enrollments (Admin only)
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<EnrollmentDTO>> getAllEnrollments() {
+        return ResponseEntity.ok(enrollmentService.getAllEnrollments());
+    }
+
 }
